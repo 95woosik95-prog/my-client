@@ -406,7 +406,7 @@
     window.googleLogin = async function () {
         try {
             const result = await signInWithPopup(auth, provider);
-            if(result.user.email !== "choae000@gmail.com"){ alert("허용된 계정이 아닙니다."); await signOut(auth); return; }
+            if(result.user.email !== "95woosik95@gmail.com"){ alert("허용된 계정이 아닙니다."); await signOut(auth); return; }
             alert("로그인 성공");
             loadCustomers();
         } catch(error){ console.error(error); alert("로그인 실패"); }
@@ -418,7 +418,7 @@
     // 로그인 상태 변경
     onAuthStateChanged(auth, async(user)=>{
         if(user){
-            if(user.email === "choae000@gmail.com") loadCustomers();
+            if(user.email === "95woosik95@gmail.com") loadCustomers();
             else { await signOut(auth); alert("허용되지 않은 계정"); }
         } else { customerData = []; renderTable(); }
     });

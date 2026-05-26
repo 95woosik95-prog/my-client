@@ -43,6 +43,10 @@
         .option-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
         .option-item { padding: 8px; text-align: center; border-radius: 6px; background: #f1f3f5; cursor: pointer; font-size: 11px; border: 1px solid transparent; }
         .option-item.selected { background: #409eff; color: white; }
+        /* 필터 버튼 스타일 */
+        .filter-tab-row { display: flex; gap: 6px; flex-wrap: wrap; padding: 5px 0; }
+        .filter-btn { padding: 6px 12px; border-radius: 20px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 12px; transition: all 0.2s; }
+        .filter-btn.active { background: #409eff; color: white; border-color: #409eff; }
     </style>
 </head>
 <body>
@@ -70,6 +74,16 @@
         <span style="align-self: center; font-weight: bold;">데이터 검색:</span>
         <input type="text" id="searchInput" placeholder="고객명, 전화번호, 메모 내용으로 검색..." onkeyup="currentPage=1; renderTable()">
     </div>
+
+    <div class="filter-tab-row">
+        <button class="filter-btn active" onclick="setFilter('ALL'); setActive(this)">전체</button>
+        <button class="filter-btn" onclick="setFilter('계약자'); setActive(this)">계약자</button>
+        <button class="filter-btn" onclick="setFilter('2차성공'); setActive(this)">2차성공</button>
+        <button class="filter-btn" onclick="setFilter('약속잡음'); setActive(this)">약속잡음</button>
+        <button class="filter-btn" onclick="setFilter('부재'); setActive(this)">부재</button>
+        <button class="filter-btn" onclick="setFilter('보류'); setActive(this)">보류</button>
+    </div>
+    
     <div class="input-grid">
         <input type="date" id="newDate">
         <input type="text" id="newName" placeholder="고객명">
@@ -143,6 +157,7 @@
     const provider = new GoogleAuthProvider();
         
     let customerData = [];
+    let currentFilter = "ALL";
     let activeRowIndex = null;
     let selectedStatus = "";
     let currentPage = 1;
@@ -181,6 +196,17 @@
             renderTable();
         });
     }
+
+    window.setFilter = function(status) {
+        currentFilter = status;
+        currentPage = 1;
+        renderTable();
+    };
+
+    window.setActive = function(btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    };
 
     // 데이터 정렬
     window.sortData = function(field, type) {
@@ -222,7 +248,11 @@
         const pagination = document.getElementById('pagination');
         const searchTerm = document.getElementById('searchInput').value.toLowerCase();
         tbody.innerHTML = "";
-        let filteredData = customerData.filter(item => !searchTerm || JSON.stringify(item).toLowerCase().includes(searchTerm));
+        let filteredData = customerData.filter(item => {
+            const matchSearch = !searchTerm || JSON.stringify(item).toLowerCase().includes(searchTerm);
+            const matchStatus = (currentFilter === "ALL") || (item.status === currentFilter);
+            return matchSearch && matchStatus;
+        });
         const totalPages = Math.ceil(filteredData.length / rowsPerPage);
         if(currentPage > totalPages) currentPage = 1;
         const start = (currentPage - 1) * rowsPerPage;
@@ -242,7 +272,7 @@
             tr.innerHTML = `
                 <td>${item.date}</td>
                 <td><strong>${item.name}</strong></td>
-                <td>${item.phone}</td>
+                <td><a href="tel:${item.phone}" style="text-decoration:none; color:#1890ff; font-weight:bold;">${item.phone}</a></td>
                 <td>${item.region}</td>
                 <td>${item.city}</td>
                 <td>${item.birth}</td>

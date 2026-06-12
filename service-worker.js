@@ -1,4 +1,4 @@
-const CACHE_NAME = 'v2'; // 버전 변경 시마다 이 숫자를 올리세요
+const CACHE_NAME = 'v3'; // 버전 변경 시마다 이 숫자를 올리세요
 const urlsToCache = [
   '/',
   '/index.html',
